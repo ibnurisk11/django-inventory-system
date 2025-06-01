@@ -1,14 +1,33 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ item.name }}{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h2>{{ item.name }}</h2>
-    <p><strong>Category:</strong> {{ item.category }}</p>
-    <p><strong>Quantity:</strong> {{ item.quantity }}</p>
-    <p><strong>Location:</strong> {{ item.location }}</p>
-    <hr>
-    <h4>Description:</h4>
-    <p>{{ item.description|default:"No description available" }}</p>
-    <a href="{% url 'home' %}" class="btn btn-secondary">Back to List</a>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ item.name }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid">
+                    {% else %}
+                        <div class="alert alert-info">No image available</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <p><strong>Category:</strong> {{ item.category }}</p>
+                    <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+                    <p><strong>Location:</strong> {{ item.location }}</p>
+                    <p><strong>Description:</strong> {{ item.description }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'main:home' %}" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
 </div>
 {% endblock %}

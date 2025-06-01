@@ -1,5 +1,5 @@
 from django.db import models
-from accounts.models import CustomUser
+from django.conf import settings
 
 class ItemCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -14,7 +14,8 @@ class InventoryItem(models.Model):
     quantity = models.PositiveIntegerField(default=0)
     location = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    added_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+    image = models.ImageField(upload_to='inventory_images/', null=True, blank=True)  # <-- Tambahkan ini
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date_added = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     
