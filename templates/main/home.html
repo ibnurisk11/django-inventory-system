@@ -9,7 +9,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Image</th>  <!-- Kolom baru untuk gambar -->
+                <th>Image</th>
                 <th>Name</th>
                 <th>Category</th>
                 <th>Quantity</th>
@@ -19,7 +19,7 @@
         </thead>
         <tbody>
             {% for item in items %}
-            <tr>
+            <tr class="item-row" data-item-id="{{ item.id }}">
                 <td>
                     {% if item.image %}
                         <img src="{{ item.image.url }}" alt="{{ item.name }}" width="50">
@@ -36,8 +36,104 @@
                     <a href="{% url 'main:item_delete' item.pk %}" class="btn btn-sm btn-danger">Delete</a>
                 </td>
             </tr>
+            <tr class="description-row" id="desc-{{ item.id }}" style="display: none;">
+                <td colspan="6">
+                    <div class="description-content p-3 bg-light">
+                        <h5>Description:</h5>
+                        <p>{{ item.description|default:"No description available" }}</p>
+                        <p><small class="text-muted">Last updated: {{ item.last_updated }}</small></p>
+                    </div>
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<!-- Modal untuk edit cepat -->
+<div class="modal fade" id="quickEditModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Quick Edit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Form akan diisi via JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const itemRows = document.querySelectorAll('.item-row');
+
+    itemRows.forEach(row => {
+        row.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A' || e.target.closest('a')) {
+                return;
+            }
+
+            const itemId = this.getAttribute('data-item-id');
+            const descRow = document.getElementById(`desc-${itemId}`);
+
+            // Sembunyikan semua deskripsi lain
+            document.querySelectorAll('.description-row').forEach(r => {
+                if (r.id !== `desc-${itemId}`) {
+                    r.style.display = 'none';
+                    r.classList.remove('active-description');
+                }
+            });
+
+            // Toggle baris yang dipilih
+            if (descRow.style.display === 'none') {
+                descRow.style.display = 'table-row';
+                descRow.classList.add('active-description');
+                descRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                descRow.style.display = 'none';
+                descRow.classList.remove('active-description');
+            }
+        });
+    });
+
+    itemRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+            this.style.cursor = 'pointer';
+        });
+
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+});
+</script>
+
+<style>
+.description-row.active-description {
+    background-color: #e9f5ff !important;
+}
+
+.description-content {
+    border-left: 4px solid #0d6efd;
+    transition: all 0.3s ease;
+}
+
+.description-row.active-description {
+    background-color: #e9f5ff !important;
+}
+
+.item-row:hover {
+    background-color: #f8f9fa !important;
+    cursor: pointer;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+}
+</style>
 {% endblock %}
